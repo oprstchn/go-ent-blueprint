@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/contrib/entgql"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -16,13 +17,19 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("age").Positive(),
-		field.String("name").Default("unknown"),
+		field.Int("age").
+			Positive().
+			Annotations(entproto.Field(4)),
+		field.String("name").
+			Default("unknown").
+			Annotations(entproto.Field(5)),
 	}
 }
 
 func (User) Annotations() []schema.Annotation {
-	return nil
+	return []schema.Annotation{
+		entproto.Service(),
+	}
 }
 
 // Edges of the User.
@@ -32,7 +39,10 @@ func (User) Edges() []ent.Edge {
 			entgql.Skip(
 				entgql.SkipMutationCreateInput,
 				entgql.SkipMutationUpdateInput,
-			)),
+			),
+			entproto.Skip(),
+			entproto.Field(6),
+		),
 	}
 }
 

@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/contrib/entgql"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -17,13 +18,17 @@ type Post struct {
 // Fields of the Post.
 func (Post) Fields() []ent.Field {
 	return []ent.Field{
-		foreignKeyXID("user_id"),
-		field.String("content"),
+		foreignKeyXID("user_id", 4),
+		field.String("content").Annotations(
+			entproto.Field(5),
+		),
 	}
 }
 
 func (Post) Annotations() []schema.Annotation {
-	return nil
+	return []schema.Annotation{
+		entproto.Service(),
+	}
 }
 
 // Edges of the Post.
@@ -34,13 +39,15 @@ func (Post) Edges() []ent.Edge {
 			Field("user_id").
 			Unique().Required().
 			Annotations(
-				&entsql.Annotation{
+				entsql.Annotation{
 					OnDelete: entsql.Cascade,
 				},
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entproto.Skip(),
+				entproto.Field(6),
 			),
 	}
 }
