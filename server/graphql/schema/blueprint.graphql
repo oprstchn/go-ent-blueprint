@@ -1,7 +1,9 @@
 extend type Query {
     user(id: ID!): User
+    post(id: ID!): Post
 }
 
 type Mutation {
     createUser(input: CreateUserInput!): User!
+    createPost(userID: ID! input: CreatePostInput!): Post!
 }

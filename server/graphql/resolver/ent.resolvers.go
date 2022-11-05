@@ -7,24 +7,33 @@ import (
 	"blueprint/ent"
 	"blueprint/graphql/generated"
 	"context"
-	"fmt"
 
 	"github.com/rs/xid"
 )
 
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id xid.ID) (ent.Noder, error) {
-	panic(fmt.Errorf("not implemented: Node - node"))
+	return r.client.Noder(ctx, id)
 }
 
 // Nodes is the resolver for the nodes field.
 func (r *queryResolver) Nodes(ctx context.Context, ids []xid.ID) ([]ent.Noder, error) {
-	panic(fmt.Errorf("not implemented: Nodes - nodes"))
+	return r.client.Noders(ctx, ids)
+}
+
+// Posts is the resolver for the posts field.
+func (r *queryResolver) Posts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.PostWhereInput) (*ent.PostConnection, error) {
+	return r.client.Post.Query().Paginate(ctx, after, first, before, last, ent.WithPostFilter(where.Filter))
 }
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.UserWhereInput) (*ent.UserConnection, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	users, err := r.client.User.Query().Paginate(ctx, after, first, before, last, ent.WithUserFilter(where.Filter))
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 // Query returns generated.QueryResolver implementation.

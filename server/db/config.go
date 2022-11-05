@@ -14,9 +14,10 @@ import (
 
 func databaseURL() string {
 	return fmt.Sprintf(
-		"postgresql://%s@%s/%s?sslmode=disable",
-		"0.0.0.0",
+		"postgresql://%s:%s@%s/%s?sslmode=disable",
+		"root",
 		"password",
+		"0.0.0.0",
 		"development",
 	)
 }

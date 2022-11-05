@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 
+	"entgo.io/contrib/entgql"
+
 	"github.com/99designs/gqlgen/graphql/playground"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -30,13 +32,18 @@ func main() {
 	if err := client.Schema.Create(
 		ctx,
 		migrate.WithGlobalUniqueID(true),
+		migrate.WithDropColumn(true),
+		migrate.WithDropIndex(true),
+		migrate.WithForeignKeys(true),
 	); err != nil {
-		fmt.Println("failed creating schema resources", err)
+		panic(err)
 	}
 
 	src := handler.NewDefaultServer(
 		resolver.NewSchema(client),
 	)
+
+	src.Use(entgql.Transactioner{TxOpener: client})
 
 	http.Handle("/", playground.Handler("Blueprint", "/query"))
 	http.Handle("/query", src)
@@ -45,6 +52,4 @@ func main() {
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
 		log.Fatal("http server terminated", err)
 	}
-
-	fmt.Printf("client: %+v, client: %+v", port, client)
 }
