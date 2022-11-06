@@ -2,6 +2,7 @@ package main
 
 import (
 	"blueprint/db"
+	"blueprint/ent/migrate"
 	"blueprint/ent/proto/entpb"
 	"context"
 	"fmt"
@@ -10,8 +11,7 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
-
-	"entgo.io/ent/examples/fs/ent/migrate"
+	//"entgo.io/ent/examples/fs/ent/migrate"
 )
 
 const defaultPort = "5000"
