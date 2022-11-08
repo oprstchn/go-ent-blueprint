@@ -16,9 +16,9 @@ exec:
 #   package: generated
 
 # Where should any generated models go?
-#model:
-#  filename: graph/model/models_gen.go
-#  package: model
+model:
+  filename: graphql/model/models_gen.go
+  package: model
 
 # Where should the resolver implementations go?
 resolver:

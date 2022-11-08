@@ -3,7 +3,14 @@ extend type Query {
     post(id: ID!): Post
 }
 
+input BulkUpsertUserInput {
+    id: ID
+    name: String!
+    age : Int!
+}
+
 type Mutation {
     createUser(input: CreateUserInput!): User!
     createPost(userID: ID! input: CreatePostInput!): Post!
+    bulkUpsertUser(input: [BulkUpsertUserInput!]!): Boolean!
 }

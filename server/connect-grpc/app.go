@@ -214,7 +214,7 @@ func main() {
 		port = defaultPort
 	}
 
-	client := db.Open()
+	client := db.PgOpen()
 
 	// auto migration
 	ctx := context.Background()

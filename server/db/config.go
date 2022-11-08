@@ -9,10 +9,11 @@ import (
 
 	"blueprint/ent"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-func databaseURL() string {
+func pgDatabaseURL() string {
 	return fmt.Sprintf(
 		"postgresql://%s:%s@%s/%s?sslmode=disable",
 		"root",
@@ -22,12 +23,30 @@ func databaseURL() string {
 	)
 }
 
-func Open() *ent.Client {
-	db, err := sql.Open("pgx", databaseURL())
+func mysqlDatabaseURL() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true",
+		"root",
+		"password",
+		"0.0.0.0",
+		"development",
+	)
+}
+
+func PgOpen() *ent.Client {
+	db, err := sql.Open("pgx", pgDatabaseURL())
 	if err != nil {
 		panic(err)
 	}
 
 	drv := entsql.OpenDB(dialect.Postgres, db)
 	return ent.NewClient(ent.Driver(drv))
+}
+
+func MysqlOpen() *ent.Client {
+	client, err := ent.Open("mysql", mysqlDatabaseURL())
+	if err != nil {
+		panic(err)
+	}
+
+	return client
 }

@@ -4,6 +4,7 @@ package generated
 
 import (
 	"blueprint/ent"
+	"blueprint/graphql/model"
 	"bytes"
 	"context"
 	"errors"
@@ -40,8 +41,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreatePost func(childComplexity int, userID xid.ID, input ent.CreatePostInput) int
-		CreateUser func(childComplexity int, input ent.CreateUserInput) int
+		BulkUpsertUser func(childComplexity int, input []*model.BulkUpsertUserInput) int
+		CreatePost     func(childComplexity int, userID xid.ID, input ent.CreatePostInput) int
+		CreateUser     func(childComplexity int, input ent.CreateUserInput) int
 	}
 
 	PageInfo struct {
@@ -115,6 +117,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Mutation.bulkUpsertUser":
+		if e.complexity.Mutation.BulkUpsertUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_bulkUpsertUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.BulkUpsertUser(childComplexity, args["input"].([]*model.BulkUpsertUserInput)), true
 
 	case "Mutation.createPost":
 		if e.complexity.Mutation.CreatePost == nil {
@@ -402,6 +416,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputBulkUpsertUserInput,
 		ec.unmarshalInputCreatePostInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputPostWhereInput,
@@ -473,9 +488,16 @@ var sources = []*ast.Source{
     post(id: ID!): Post
 }
 
+input BulkUpsertUserInput {
+    id: ID
+    name: String!
+    age : Int!
+}
+
 type Mutation {
     createUser(input: CreateUserInput!): User!
     createPost(userID: ID! input: CreatePostInput!): Post!
+    bulkUpsertUser(input: [BulkUpsertUserInput!]!): Boolean!
 }`, BuiltIn: false},
 	{Name: "../schema/ent.graphql", Input: `directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 directive @goModel(model: String, models: [String!]) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION

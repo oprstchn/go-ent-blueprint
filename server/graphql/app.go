@@ -25,7 +25,7 @@ func main() {
 		port = defaultPort
 	}
 
-	client := db.Open()
+	client := db.MysqlOpen()
 
 	// auto migration
 	ctx := context.Background()

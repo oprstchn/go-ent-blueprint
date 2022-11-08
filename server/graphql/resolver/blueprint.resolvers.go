@@ -6,6 +6,7 @@ package resolver
 import (
 	"blueprint/ent"
 	"blueprint/graphql/generated"
+	"blueprint/graphql/model"
 	"context"
 
 	"github.com/rs/xid"
@@ -37,6 +38,25 @@ func (r *mutationResolver) CreatePost(ctx context.Context, userID xid.ID, input 
 		return nil, err
 	}
 	return post, nil
+}
+
+// BulkUpsertUser is the resolver for the bulkUpsertUser field.
+func (r *mutationResolver) BulkUpsertUser(ctx context.Context, input []*model.BulkUpsertUserInput) (bool, error) {
+	userCreates := make([]*ent.UserCreate, len(input))
+	for i := range input {
+		c := r.client.User.Create()
+		if input[i].ID != nil {
+			c.SetID(*input[i].ID)
+		}
+		c.SetName(input[i].Name)
+		c.SetAge(input[i].Age)
+		userCreates[i] = c
+	}
+	if err := r.client.User.CreateBulk(userCreates...).OnConflict().UpdateNewValues().Exec(ctx); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // User is the resolver for the user field.

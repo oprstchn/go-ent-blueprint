@@ -10,5 +10,16 @@ services:
       POSTGRES_DB: development
     ports:
       - "5432:5432"
+  mysql:
+    image: mysql:8.0.26
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: development
+    ports:
+      - "3306:3306"
+
 volumes:
   pg_data:
+  mysql_data:

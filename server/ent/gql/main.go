@@ -20,7 +20,20 @@ func main() {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
 
-	if err := entc.Generate("../ent/schema", &gen.Config{}, entc.Extensions(ex)); err != nil {
+	if err := entc.Generate("../ent/schema", &gen.Config{
+		Features: []gen.Feature{
+			gen.FeaturePrivacy,
+			gen.FeatureEntQL,
+			//gen.FeatureNamedEdges,
+			//gen.FeatureSnapshot,
+			//gen.FeatureSchemaConfig,
+			//gen.FeatureLock,
+			gen.FeatureModifier,
+			gen.FeatureExecQuery,
+			gen.FeatureUpsert,
+			//gen.FeatureVersionedMigration,
+		},
+	}, entc.Extensions(ex)); err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
 }
